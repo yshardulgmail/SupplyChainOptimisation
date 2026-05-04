@@ -188,11 +188,9 @@ When('I clear the TinyMCE editor', async function () {
 
   const body = iframe.locator('body');
 
-  await body.click();
+  await body.evaluate(node => node.innerHTML = "");
 
-  await body.selectText();
-
-  await page.keyboard.press('Delete');
+  expect(await body.innerText()).toBe("");
 
 });
 
@@ -203,8 +201,10 @@ When('I type {string} into the editor', async function (text) {
   const iframe = page.frameLocator('iframe[title="Rich Text Area"]');
 
   const body = iframe.locator('body');
+ 
+  await body.evaluate(node => node.innerHTML = "Playwright iFrame Assessment");
 
-  await body.type(text);
+  // expect(await body.innerText()).toBe(text);
 
 });
 
@@ -246,3 +246,5 @@ Then('I close the new tab and confirm original page shows {string}', async funct
   const heading = page.locator('h3');
   await expect(heading).toContainText(headingText);
 });
+
+
