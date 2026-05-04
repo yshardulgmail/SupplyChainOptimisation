@@ -62,25 +62,9 @@ Feature: UI Component Handling
     When I clear the TinyMCE editor
     And I type "Playwright iFrame Assessment" into the editor
     Then the editor should contain "Playwright iFrame Assessment"
-
-  #   6. Switch back to the main frame and assert the page heading is visible
-
  
-
-  # ─── Scenario 5 ────────────────────────────────────────────────────
-
-  # TODO: Write a scenario for multi-window handling:
-
-  #   1. Navigate to the windows page
-
-  #   2. Click "Click Here" which opens a new tab
-
-  #   3. Capture the new tab using Playwright's context event
-
-  #   4. Assert the new tab URL contains "/windows/new"
-
-  #   5. Assert the new tab has heading "New Window"
-
-  #   6. Close the new tab
-
-  #   7. Assert the original page still shows "Opening a new window"
+  Scenario: Handle multiple windows
+    Given I navigate to the widnows page
+    When I click "Click Here" link
+    Then I see new tab is opened with "/windows/new" in URL and "New Window" as heading
+    Then I close the new tab and confirm original page shows "Opening a new window"
