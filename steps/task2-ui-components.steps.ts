@@ -27,18 +27,20 @@
  
 
 import { Given, When, Then, Before, After, setDefaultTimeout } from '@cucumber/cucumber';
-import { chromium, Browser, Page, expect } from '@playwright/test';
+import { chromium, Browser, Page, expect, BrowserContext } from '@playwright/test';
 
 setDefaultTimeout(30_000); 
 
 let browser: Browser;
 let page: Page;
+let newPage: Page;
+let context: BrowserContext;
 let dialogAction: 'accept' | 'dismiss' = 'accept';
 let dialogText = '';
 
 Before(async function () {
   browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext();
+  context = await browser.newContext();
   page = await context.newPage();
 });
 
@@ -218,4 +220,29 @@ Then('the editor should contain {string}', async function (expectedText) {
 
   expect(content).toContain(expectedText);
 
+});
+
+
+// Scenario 5
+
+Given('I navigate to the widnows page', async function () {
+  await page.goto('https://the-internet.herokuapp.com/windows');
+});
+
+When('I click {string} link', async function (expectedText) {
+  const pagePromise = context.waitForEvent('page');
+  await page.locator(`a:has-text("${expectedText}")`).click();
+  newPage = await pagePromise;
+});
+
+Then('I see new tab is opened with {string} in URL and {string} as heading', async function (url, headingText) {
+  expect(newPage).toHaveURL(new RegExp(url));
+  const heading = newPage.locator('h3');
+  await expect(heading).toContainText(headingText);
+});
+
+Then('I close the new tab and confirm original page shows {string}', async function (headingText) {
+  await newPage.close();
+  const heading = page.locator('h3');
+  await expect(heading).toContainText(headingText);
 });
